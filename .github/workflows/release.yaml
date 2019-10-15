@@ -10,8 +10,14 @@ jobs:
         uses: actions/checkout@v1
       
       - name: Build
-        run: echo ${{ github.sha }} > Release.txt
+        run: GOOS=linux GOARCH=amd64 go build -o build/linux/amd64/myapp
 
+      ################################################
+      # Create Github release if this is a tag push
+      - name: Pack
+        run: zip -r build/artifacts/myapp-linux-amd64.zip build/linux/amd64/
+        if: startsWith(github.ref, 'refs/tags/')
+     
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
